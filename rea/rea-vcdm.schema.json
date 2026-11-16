@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.example.org/rea/v0.1/rea-vcdm.schema.json",
+  "$id": "https://kalop.github.io/schemas/rea/rea-vcdm.schema.json",
   "title": "ISBE REA Credential (W3C VC-DM 2.0)",
   "description": "Credencial de inscripción en el Registro de Empresas Acreditadas emitida en el ecosistema ISBE en formato W3C VC-DM 2.0. Extiende ISBE Domain Attestation. El estado de vigencia (activa, revocada, suspendida) se expresa en credentialStatus, no como atributo. Propuesta v0.1 para contraste con la DGT.",
   "type": "object",
@@ -18,7 +18,7 @@
         },
         "credentialSubject": {
           "type": "object",
-          "$ref": "rea-claims.schema.json"
+          "$ref": "https://kalop.github.io/schemas/rea/rea-claims.schema.json"
         },
         "credentialStatus": {
           "description": "Estado de la inscripción mediante BitstringStatusList de 2 bits: 0x0 activa, 0x1 revocada, 0x2 suspendida.",

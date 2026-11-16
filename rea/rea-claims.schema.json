@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kalop.github.io/schemas/rea/rea-claims.schema.json",
+  "title": "Atributos de la credencial REA (núcleo independiente del formato)",
+  "description": "Atributos de inscripción en el Registro de Empresas Acreditadas (Ley 32/2006, RD 1109/2007). Es el núcleo común: en W3C VC-DM 2.0 se usa como credentialSubject y en SD-JWT VC como claims de primer nivel. Propuesta v0.1 para contraste con la Dirección General de Trabajo de la Comunidad de Madrid.",
+  "type": "object",
+  "properties": {
+    "reaNumber": {
+      "description": "Número de inscripción REA. Clave única nacional de 11 dígitos: 2 de autoridad laboral (Anexo II RD 1109/2007), 2 de código interno opcional y 7 de número de orden (art. 5.2).",
+      "type": "string",
+      "pattern": "^[0-9]{11}$"
+    },
+    "legalName": {
+      "description": "Denominación social de la empresa (art. 4.1.a).",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 250
+    },
+    "taxIdType": {
+      "description": "Tipo de identificador fiscal de la empresa.",
+      "type": "string",
+      "enum": ["NIF", "CIF"]
+    },
+    "taxId": {
+      "description": "Identificador fiscal de la empresa (art. 4.1.c): NIF/NIE de persona física o CIF de persona jurídica. Sin prefijo de país.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20
+    },
+    "euid": {
+      "description": "European Unique Identifier (BRIS), cuando exista. Opcional: no aplica a autónomos ni a todas las formas jurídicas.",
+      "type": "string",
+      "maxLength": 60
+    },
+    "registeredAddress": {
+      "description": "Domicilio social (art. 4.1.b). No el domicilio fiscal.",
+      "type": "object",
+      "properties": {
+        "streetAddress": { "type": "string", "minLength": 1, "maxLength": 250 },
+        "locality": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "postalCode": { "type": "string", "pattern": "^[0-9]{5}$" },
+        "region": {
+          "description": "Código ISO 3166-2 de la comunidad autónoma (p. ej. ES-MD).",
+          "type": "string",
+          "pattern": "^ES-[A-Z]{1,2}$"
+        },
+        "country": {
+          "description": "Código ISO 3166-1 alfa-2.",
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        }
+      },
+      "required": ["streetAddress", "locality", "postalCode", "country"],
+      "additionalProperties": false
+    },
+    "activities": {
+      "description": "Actividades acreditadas según CNAE (art. 4.1.e). El código va siempre acompañado de la versión de la clasificación.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "cnaeCode": { "type": "string", "pattern": "^[0-9]{2,4}$" },
+          "cnaeVersion": { "type": "string", "enum": ["CNAE-2009", "CNAE-2025"] },
+          "description": { "type": "string", "maxLength": 250 }
+        },
+        "required": ["cnaeCode", "cnaeVersion"],
+        "additionalProperties": false
+      }
+    },
+    "registrationDate": {
+      "description": "Fecha de inscripción inicial en el REA.",
+      "type": "string",
+      "format": "date"
+    },
+    "lastRenewalDate": {
+      "description": "Fecha de la última renovación, si la hubo (art. 6.1).",
+      "type": "string",
+      "format": "date"
+    },
+    "expiryDate": {
+      "description": "Fecha de caducidad de la inscripción (3 años desde la inscripción o la última renovación). Debe ser coherente con validUntil / exp del formato de credencial.",
+      "type": "string",
+      "format": "date"
+    },
+    "issuingAuthority": {
+      "description": "Autoridad laboral responsable de la inscripción (fuente auténtica).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Código de la autoridad laboral según el Anexo II del RD 1109/2007 (coincide con los 2 primeros dígitos de reaNumber).",
+          "type": "string",
+          "pattern": "^[0-9]{2}$"
+        },
+        "name": { "type": "string", "minLength": 1, "maxLength": 250 }
+      },
+      "required": ["code", "name"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "reaNumber",
+    "legalName",
+    "taxIdType",
+    "taxId",
+    "registeredAddress",
+    "activities",
+    "registrationDate",
+    "expiryDate",
+    "issuingAuthority"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "taxIdType": { "const": "CIF" } },
+        "required": ["taxIdType"]
+      },
+      "then": {
+        "properties": {
+          "taxId": {
+            "pattern": "^[ABCDEFGHJNPQRSUVW][0-9]{7}[0-9A-J]$"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "taxId": {
+            "pattern": "^([0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$"
+          }
+        }
+      }
+    }
+  ]
+}
