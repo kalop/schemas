@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.org/rea/v0.1/rea-vcdm.schema.json",
+  "title": "ISBE REA Credential (W3C VC-DM 2.0)",
+  "description": "Credencial de inscripción en el Registro de Empresas Acreditadas emitida en el ecosistema ISBE en formato W3C VC-DM 2.0. Extiende ISBE Domain Attestation. El estado de vigencia (activa, revocada, suspendida) se expresa en credentialStatus, no como atributo. Propuesta v0.1 para contraste con la DGT.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "https://raw.githubusercontent.com/alastria/isbe-identity-schemas-repository/main/commons/isbe-domain-credential-schema.json"
+    },
+    {
+      "properties": {
+        "type": {
+          "description": "Cadena de tipos. Incluye el dominio (ISBE-DEV en desarrollo, ISBE-PILOT en el piloto) y el tipo propio ReaCredential.",
+          "type": "array",
+          "items": { "type": "string" },
+          "contains": { "const": "ReaCredential" }
+        },
+        "credentialSubject": {
+          "type": "object",
+          "$ref": "rea-claims.schema.json"
+        },
+        "credentialStatus": {
+          "description": "Estado de la inscripción mediante BitstringStatusList de 2 bits: 0x0 activa, 0x1 revocada, 0x2 suspendida.",
+          "type": "object",
+          "properties": {
+            "type": { "const": "BitstringStatusListEntry" },
+            "statusPurpose": { "const": "message" },
+            "statusSize": { "const": 2 }
+          },
+          "required": ["type", "statusListCredential", "statusListIndex", "statusPurpose"]
+        }
+      },
+      "required": ["credentialSubject", "credentialStatus", "validFrom", "validUntil"]
+    }
+  ]
+}
