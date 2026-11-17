@@ -19,10 +19,10 @@
     "taxIdType": {
       "description": "Tipo de identificador fiscal de la empresa.",
       "type": "string",
-      "enum": ["NIF", "CIF"]
+      "enum": ["NIF", "IED"]
     },
     "taxId": {
-      "description": "Identificador fiscal de la empresa (art. 4.1.c): NIF/NIE de persona física o CIF de persona jurídica. Sin prefijo de país.",
+      "description": "NIF de una persona física o jurídica, o Identificador de Empresa Desplazada (IED). Sin prefijo de país.",
       "type": "string",
       "minLength": 1,
       "maxLength": 20
@@ -112,20 +112,20 @@
   "allOf": [
     {
       "if": {
-        "properties": { "taxIdType": { "const": "CIF" } },
+        "properties": { "taxIdType": { "const": "IED" } },
         "required": ["taxIdType"]
       },
       "then": {
         "properties": {
           "taxId": {
-            "pattern": "^[ABCDEFGHJNPQRSUVW][0-9]{7}[0-9A-J]$"
+            "pattern": "^[A-Z0-9]{1,10}$"
           }
         }
       },
       "else": {
         "properties": {
           "taxId": {
-            "pattern": "^([0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$"
+            "pattern": "^([0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z]|[ABCDEFGHJNPQRSUVW][0-9]{7}[0-9A-J])$"
           }
         }
       }
